@@ -1,0 +1,37 @@
+# Build / IDE
+build/
+.gradle/
+bin/
+out/
+.idea/
+.vscode/
+*.iml
+
+# Local config (secrets) — never commit
+.env
+.env.*
+!.env.example
+src/main/resources/application-*.properties
+!src/main/resources/application-docker.properties
+docker-compose.dev.yml
+*.pem
+*.key
+
+# Excel templates are injected on the server (contain organization contact info)
+*.xlsx
+!sample_*.xlsx
+
+# DB dumps / data (removed from history)
+db/
+*.sql.gz
+
+# Logs
+logs/*
+!logs/.gitkeep
+*.log
+
+# OS / AI tooling
+.DS_Store
+CLAUDE.md
+claude.md
+.claude/
