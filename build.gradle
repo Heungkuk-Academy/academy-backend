@@ -54,6 +54,12 @@ dependencies {
 
 }
 
+// 엑셀 양식(연락처, 직인 포함)은 jar 에 넣지 않는다. 서버의 app.template.path 에서 읽는다.
+// 로컬에서 src/main/resources/templates/ 에 양식을 두고 쓰더라도 빌드에는 포함되지 않는다.
+processResources {
+    exclude 'templates/**'
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }
