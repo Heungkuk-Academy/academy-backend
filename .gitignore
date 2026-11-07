@@ -17,9 +17,10 @@ docker-compose.dev.yml
 *.pem
 *.key
 
-# Excel templates are injected on the server (contain organization contact info)
+# Excel templates are injected on the server (contain contact info and seal images) — never commit any xlsx
 *.xlsx
-!sample_*.xlsx
+*.xls
+*.xlsm
 
 # DB dumps / data (removed from history)
 db/
