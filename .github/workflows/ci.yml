@@ -1,0 +1,44 @@
+name: CI
+
+# PR 이 열리면 테스트와 빌드가 통과하는지 확인한다 (`./gradlew build` = 컴파일 + 테스트 + 패키징).
+# 로컬 전용 테스트(ExcelServiceImplTest, ExcelTemplateParityTest)는 환경변수가 없으면 자동으로 건너뛴다.
+# CI 에는 해당 환경변수를 넣지 않는다.
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: read
+
+# 같은 PR 에 새 push 가 들어오면 진행 중인 검사는 취소한다
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Build and test
+        run: ./gradlew build --no-daemon
+
+      # 실패했을 때만 테스트 리포트를 내려받을 수 있게 올린다
+      - name: Upload test report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: build/reports/tests/test/
+          retention-days: 7
