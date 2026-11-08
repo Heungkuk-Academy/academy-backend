@@ -34,6 +34,13 @@
 4. 리뷰 후 머지
 5. 릴리스 시 `develop` → `main` PR
 
+### 머지 조건
+
+- `develop`과 `main`은 **PR로만** 반영된다. 직접 푸시는 관리자도 불가능하다.
+- CI의 **`Test and build`**(`./gradlew build`, 테스트 포함)가 통과해야 머지할 수 있다. 테스트가 하나라도 실패하면 머지 버튼이 막힌다.
+- PR을 올리기 전에 로컬에서 `./gradlew build` 로 먼저 확인한다.
+- `.github/workflows/ci.yml` 의 잡 이름(`Test and build`)을 바꾸거나 `paths` 필터를 넣으면 브랜치 보호의 필수 체크와 어긋나 머지가 막힐 수 있으므로, 바꿀 때는 보호 규칙도 같이 수정한다.
+
 ## 커밋 메시지
 
 ```
