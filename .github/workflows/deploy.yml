@@ -26,9 +26,7 @@ env:
   IMAGE: ghcr.io/heungkuk-academy/academy-backend
 
 jobs:
-  # ── 이미지 빌드 ─────────────────────────────────────────────
-  # ubuntu-24.04-arm = GitHub ARM 러너. 서버가 ARM 이라 여기서 네이티브로 빌드해야
-  # QEMU 에뮬레이션(5~10배 느림)을 피한다. public 레포에서 무료다.
+  # ── 이미지 빌드 ────────────────────────────────────────────
   build:
     name: Build and push image
     runs-on: ubuntu-24.04-arm
