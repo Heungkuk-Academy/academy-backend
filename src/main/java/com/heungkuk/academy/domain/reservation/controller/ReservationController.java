@@ -65,6 +65,10 @@ public class ReservationController {
                                 .success(reservationService.getReservationsByYear(year)));
         }
 
+
+
+
+
         /** 일정현황 3개월 뷰용 — 날짜 범위 조회 */
         @Operation(summary = "날짜 범위 예약 조회", description = "from ~ to 범위에 걸치는 예약 전체를 반환합니다.")
         @GetMapping("/range")
