@@ -34,5 +34,5 @@ logs/*
 # OS / AI tooling
 .DS_Store
 CLAUDE.md
-claude.md
+CLAUDE.md
 .claude/

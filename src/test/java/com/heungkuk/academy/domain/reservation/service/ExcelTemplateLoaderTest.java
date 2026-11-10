@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.EnumMap;
+import java.util.Map;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.Test;
@@ -31,8 +33,12 @@ class ExcelTemplateLoaderTest {
 
     @Test
     void 세_양식은_각자_정해진_파일_이름으로_읽는다() throws IOException {
+        // 워크북 바이트에는 생성 시각이 들어가므로, 비교 기준은 다시 만들지 않고 쓴 값을 그대로 보관한다
+        Map<ExcelTemplate, byte[]> written = new EnumMap<>(ExcelTemplate.class);
         for (ExcelTemplate t : ExcelTemplate.values()) {
-            Files.write(dir.resolve(t.fileName()), workbookWithMarker(t.name()));
+            byte[] bytes = workbookWithMarker(t.name());
+            Files.write(dir.resolve(t.fileName()), bytes);
+            written.put(t, bytes);
         }
         ExcelTemplateLoader loader = new ExcelTemplateLoader(dir.toString());
 
@@ -41,7 +47,7 @@ class ExcelTemplateLoaderTest {
         assertThat(ExcelTemplate.CONFIRMATION.fileName()).isEqualTo("confirmation_template.xlsx");
         for (ExcelTemplate t : ExcelTemplate.values()) {
             try (InputStream is = loader.open(t)) {
-                assertThat(is.readAllBytes()).isEqualTo(workbookWithMarker(t.name()));
+                assertThat(is.readAllBytes()).isEqualTo(written.get(t));
             }
         }
     }
