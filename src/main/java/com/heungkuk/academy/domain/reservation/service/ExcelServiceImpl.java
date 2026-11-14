@@ -62,6 +62,7 @@ public class ExcelServiceImpl implements ExcelService {
     private final ClassroomReservationRepository classroomReservationRepository;
     private final MealReservationRepository mealReservationRepository;
     private final AppSettingRepository appSettingRepository;
+    private final ExcelTemplateLoader templateLoader;
 
     // ══════════════════════════════════════════════════════════════════════════
     // 공통 상수 — 숙박·강의실 매핑
@@ -94,7 +95,7 @@ public class ExcelServiceImpl implements ExcelService {
             "중형(50인)", 23, "소형(30인)", 24, "소형(20인)", 25, "분임실(12인)", 27, "다목적실", 28);
 
     /**
-     * 견적서 xlsx 생성 후 byte[] 반환. 템플릿: classpath:/templates/estimate_template.xlsx
+     * 견적서 xlsx 생성 후 byte[] 반환. 템플릿: {@link ExcelTemplate#ESTIMATE} (app.template.path 에서 읽음)
      */
     @Override
     public byte[] generateEstimate(Long reservationId, String userId) {
@@ -113,7 +114,7 @@ public class ExcelServiceImpl implements ExcelService {
         long mealPrice = toLong(settings.getOrDefault("price.meal", "8300"));
         long specialMealPrice = toLong(settings.getOrDefault("price.specialMeal", "35000"));
 
-        try (InputStream is = getClass().getResourceAsStream("/templates/estimate_template.xlsx");
+        try (InputStream is = templateLoader.open(ExcelTemplate.ESTIMATE);
                 XSSFWorkbook wb = new XSSFWorkbook(is)) {
 
             XSSFSheet sheet = wb.getSheetAt(0);
@@ -412,7 +413,7 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     /**
-     * 거래명세서 xlsx 생성 후 byte[] 반환. 템플릿: classpath:/templates/trade_template.xlsx
+     * 거래명세서 xlsx 생성 후 byte[] 반환. 템플릿: {@link ExcelTemplate#TRADE} (app.template.path 에서 읽음)
      */
     @Override
     public byte[] generateTrade(Long reservationId, String userId) {
@@ -428,7 +429,7 @@ public class ExcelServiceImpl implements ExcelService {
 
         long roomPrice = toLong(settings.getOrDefault("price.room", "85000"));
 
-        try (InputStream is = getClass().getResourceAsStream("/templates/trade_template.xlsx");
+        try (InputStream is = templateLoader.open(ExcelTemplate.TRADE);
                 XSSFWorkbook wb = new XSSFWorkbook(is)) {
 
             XSSFSheet sheet = wb.getSheetAt(0);
@@ -467,13 +468,7 @@ public class ExcelServiceImpl implements ExcelService {
                 classroomReservationRepository.findByReservation(res);
         List<MealReservation> meals = mealReservationRepository.findByReservation(res);
 
-        try (InputStream is =
-                getClass().getResourceAsStream("/templates/confirmation_template.xlsx")) {
-            if (is == null) {
-                throw new RuntimeException(
-                        "확인서 템플릿이 없습니다. /templates/confirmation_template.xlsx 파일을 추가해주세요.");
-            }
-
+        try (InputStream is = templateLoader.open(ExcelTemplate.CONFIRMATION)) {
             try (XSSFWorkbook wb = new XSSFWorkbook(is)) {
                 XSSFSheet sheet = wb.getSheetAt(0);
                 fillConfirmationSheet(sheet, res, rooms, classrooms, meals);
